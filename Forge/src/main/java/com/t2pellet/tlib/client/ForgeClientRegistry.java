@@ -26,7 +26,7 @@ public class ForgeClientRegistry implements IClientRegistry {
         System.out.println("Called to register particle!");
         FMLJavaModLoadingContext.get().getModEventBus().addListener((Consumer<RegisterParticleProvidersEvent>) particleFactoryRegisterEvent -> {
             System.out.println("REGISTER SPRITE SET");
-            particleFactoryRegisterEvent.register(particleFactoryEntry.get(), spriteSet -> particleFactoryEntry.getProviderFunction().apply(spriteSet));
+            particleFactoryRegisterEvent.registerSpriteSet(particleFactoryEntry.get(), spriteSet -> particleFactoryEntry.getProviderFunction().apply(spriteSet));
         });
         return particleFactoryEntry::get;
     }

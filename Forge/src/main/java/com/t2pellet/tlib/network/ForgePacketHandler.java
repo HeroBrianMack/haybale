@@ -79,7 +79,7 @@ public class ForgePacketHandler implements IPacketHandler {
     @Override
     public <T extends Packet> void sendInRange(T packet, Entity e, float range) {
         AABB box = new AABB(e.blockPosition()).inflate(range);
-        sendInArea(packet, e.getLevel(), box);
+        sendInArea(packet, e.level(), box);
     }
 
     @Override

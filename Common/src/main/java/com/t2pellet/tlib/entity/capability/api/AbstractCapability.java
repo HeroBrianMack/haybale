@@ -15,14 +15,14 @@ public abstract class AbstractCapability<E extends Entity & ICapabilityHaver> im
 
     public void synchronize() {
         Entity entity = this.entity;
-        if (!entity.level.isClientSide) {
+        if (!entity.level().isClientSide) {
             CapabilityPacket<E> packet = new CapabilityPacket<>(this.entity, getClass());
             Services.PACKET_HANDLER.sendInRange(packet, this.entity, 128);
         }
     }
 
     public void synchronizeTo(ServerPlayer player) {
-        if (!entity.level.isClientSide) {
+        if (!entity.level().isClientSide) {
             CapabilityPacket<E> packet = new CapabilityPacket<>(entity, getClass());
             Services.PACKET_HANDLER.sendTo(packet, player);
         }
