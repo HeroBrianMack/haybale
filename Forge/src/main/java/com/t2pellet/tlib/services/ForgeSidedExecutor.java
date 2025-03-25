@@ -48,7 +48,7 @@ public class ForgeSidedExecutor implements ISidedExecutor {
     public void onServerTick(TickEvent.ServerTickEvent event) {
         ++tick;
         PQEntry top = pq.peek();
-        if (top != null && top.tick >= tick) {
+        if (top != null && top.tick < tick) {
             pq.poll();
             event.getServer().execute(top.runnable);
         }
