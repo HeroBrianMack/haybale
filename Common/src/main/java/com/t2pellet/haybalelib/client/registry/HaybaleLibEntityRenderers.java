@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.world.entity.animal.Cow;
 
 @RegistryClass.IRegistryClass(EntityRendererProvider.class)
-public class TlibEntityRenderers implements RegistryClass {
+public class HaybaleLibEntityRenderers implements RegistryClass {
 
     @RegistryClass.IRegistryEntry
     public static final EntityRendererEntryType<Cow> COW_RENDERER = new EntityRendererEntryType<>(HaybaleLibEntities.TEST_ENTITY::get, CowRenderer::new);

@@ -51,9 +51,9 @@ class CommonRegistrar extends BaseRegistrar {
         HaybaleLib.LOG.debug("Registering packets for modid: " + modid);
         for (Field field : packets.getClass().getDeclaredFields()) {
             IModPackets.IPacket packetInfo = field.getAnnotation(IModPackets.IPacket.class);
-            if (packetInfo != null && field.getType().equals(IModPackets.TLibPacket.class)) {
+            if (packetInfo != null && field.getType().equals(IModPackets.HaybaleLibPacket.class)) {
                 try {
-                    IModPackets.TLibPacket packet = (IModPackets.TLibPacket) field.get(null);
+                    IModPackets.HaybaleLibPacket packet = (IModPackets.HaybaleLibPacket) field.get(null);
                     if (packetInfo.client()) {
                         Services.COMMON_REGISTRY.registerClientPacket(modid, packetInfo.name(), packet.getPacketClass());
                     } else {
@@ -73,9 +73,9 @@ class CommonRegistrar extends BaseRegistrar {
         HaybaleLib.LOG.debug("Registering capabilities for modid: " + modid);
         for (Field field : capabilities.getClass().getDeclaredFields()) {
             IModCapabilities.ICapability capabilityInfo = field.getAnnotation(IModCapabilities.ICapability.class);
-            if (capabilityInfo != null && field.getType().equals(IModCapabilities.TLibCapability.class)) {
+            if (capabilityInfo != null && field.getType().equals(IModCapabilities.HaybaleLibCapability.class)) {
                 try {
-                    IModCapabilities.TLibCapability<?> capability = (IModCapabilities.TLibCapability<?>) field.get(null);
+                    IModCapabilities.HaybaleLibCapability<?> capability = (IModCapabilities.HaybaleLibCapability<?>) field.get(null);
                     registerCapability(capabilityInfo.value(), capability::get);
                 } catch (Exception e) {
                     HaybaleLib.LOG.error("Failed to register capabilities for " + modid);

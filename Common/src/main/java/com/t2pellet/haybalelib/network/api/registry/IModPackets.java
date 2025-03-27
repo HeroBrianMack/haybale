@@ -16,11 +16,11 @@ public interface IModPackets {
         boolean client();
     }
 
-    class TLibPacket {
+    class HaybaleLibPacket {
 
         private final Class<? extends Packet> packetClass;
 
-        public TLibPacket(Class<? extends Packet> packetClass) {
+        public HaybaleLibPacket(Class<? extends Packet> packetClass) {
             this.packetClass = packetClass;
         }
 

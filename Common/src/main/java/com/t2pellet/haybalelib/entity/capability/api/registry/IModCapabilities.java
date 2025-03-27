@@ -18,10 +18,10 @@ public interface IModCapabilities {
         Class<? extends Capability> value();
     }
 
-    class TLibCapability<T extends Capability> {
+    class HaybaleLibCapability<T extends Capability> {
         CapabilityRegistrar.CapabilityFactory<T> supplier;
 
-        public TLibCapability(CapabilityRegistrar.CapabilityFactory<T> supplier) {
+        public HaybaleLibCapability(CapabilityRegistrar.CapabilityFactory<T> supplier) {
             this.supplier = supplier;
         }
 
