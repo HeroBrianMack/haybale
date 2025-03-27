@@ -1,31 +1,31 @@
 {
   "schemaVersion": 1,
-  "id": "tlib",
+  "id": "haybalelib",
   "version": "${version}",
-  "name": "Tenzin Lib",
+  "name": "Haybale Lib",
   "description": "Library mod for Tenzin's mods!",
   "authors": [
     "${mod_author}"
   ],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/tlib",
-    "sources": "https://github.com/t2pellet/tlib"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/haybale-1-20-1",
+    "sources": "https://github.com/HeroBrianMack/haybale"
   },
   "license": "AGPLv3",
-  "icon": "assets/tlib/icon.png",
+  "icon": "assets/haybalelib/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.t2pellet.tlib.TenzinLibFabric"
+      "com.t2pellet.haybalelib.HaybaleLibFabric"
     ],
     "client": [
-      "com.t2pellet.tlib.TenzinLibFabric"
+      "com.t2pellet.haybalelib.HaybaleLibFabric"
     ],
-    "modmenu": [ "com.t2pellet.tlib.client.compat.FabricModMenuCompat"]
+    "modmenu": [ "com.t2pellet.haybalelib.client.compat.FabricModMenuCompat"]
   },
   "mixins": [
-    "tlib.mixins.json",
-    "tlib.fabric.mixins.json"
+    "haybalelib.mixins.json",
+    "haybalelib.fabric.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.15.11",
