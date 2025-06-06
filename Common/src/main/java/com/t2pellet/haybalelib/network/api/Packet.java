@@ -21,5 +21,4 @@ public abstract class Packet {
 
     public abstract Runnable getExecutor();
 
-
 }

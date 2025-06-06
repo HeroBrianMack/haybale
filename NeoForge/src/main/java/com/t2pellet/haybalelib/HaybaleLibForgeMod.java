@@ -4,17 +4,17 @@ import com.t2pellet.haybalelib.client.HaybaleLibModClient;
 import com.t2pellet.haybalelib.client.compat.ConfigMenu;
 import com.t2pellet.haybalelib.config.ConfigRegistrar;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.ConfigScreenHandler;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.ConfigScreenHandler;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.DistExecutor;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public abstract class HaybaleLibForgeMod {
 
@@ -37,10 +37,10 @@ public abstract class HaybaleLibForgeMod {
         modid = modAnnotation.value();
         HaybaleLibForge.getInstance().register(modid, this);
         // Create deferred registers
-        ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, modid);
-        ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, modid);
-        PARTICLES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, modid);
-        SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, modid);
+        ENTITIES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, modid);
+        ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, modid);
+        PARTICLES = DeferredRegister.create(BuiltInRegistries.PARTICLE_TYPE, modid);
+        SOUNDS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, modid);
         // Common init
         onCommonSetup();
         // Client init
