@@ -17,7 +17,7 @@ mixin {
 jarJar.enable()
 
 minecraft {
-    mappings channel: 'official', version: minecraft_version
+    mappings channel: mapping_channel, version: minecraft_version
 
     // Automatically enable forge AccessTransformers if the file exists
     // This location is hardcoded in Forge and can not be changed.
