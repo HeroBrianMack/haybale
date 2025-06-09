@@ -11,24 +11,20 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-//import net.minecraftforge.network.SimpleChannel;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ForgePacketHandler implements IPacketHandler {
 
-    private final String PROTOCOL_VERSION = "4";
+    private final int PROTOCOL_VERSION = 4;
     private final Map<ResourceLocation, Integer> idMap = new HashMap<>();
-    private final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder.named(
+    private final SimpleChannel INSTANCE = ChannelBuilder.named(
             new ResourceLocation(HaybaleLib.MODID, "main"))
-            .clientAcceptedVersions((tmp) -> true)
-            .serverAcceptedVersions((tmp) -> true)
-            .networkProtocolVersion(() -> PROTOCOL_VERSION)
+            .clientAcceptedVersions((tmp, tmp2) -> true)
+            .serverAcceptedVersions((tmp1, tmp2) -> true)
+            .networkProtocolVersion(PROTOCOL_VERSION)
             .simpleChannel();
 
     public void registerServerPacket(String modid, String name, Class<? extends Packet> packetClass) {
@@ -43,7 +39,7 @@ public class ForgePacketHandler implements IPacketHandler {
 
     private <T extends Packet> void registerPacket(String modid, String name, Class<T> packetClass) {
         ResourceLocation id = new ResourceLocation(modid, name);
-        // changed in 1.20.1+!
+        // changed in 1.20.2+!
         INSTANCE.messageBuilder(packetClass, idMap.get(id)).encoder(Packet::encode).decoder(friendlyByteBuf -> {
                     try {
                         return packetClass.getDeclaredConstructor(FriendlyByteBuf.class).newInstance(friendlyByteBuf);
@@ -53,41 +49,26 @@ public class ForgePacketHandler implements IPacketHandler {
                     }
                     return null;
                 }).consumerNetworkThread((t, contextSupplier) -> {
-            if (contextSupplier.get().getDirection().getReceptionSide().isClient()) {
+            if (contextSupplier.getDirection().getReceptionSide().isClient()) {
                 Services.SIDE.scheduleClient(t.getExecutor());
             } else {
                 Services.SIDE.scheduleServer(t.getExecutor());
             }
-            contextSupplier.get().setPacketHandled(true);
+            contextSupplier.setPacketHandled(true);
         }).add();
-        INSTANCE.registerMessage(idMap.get(id), packetClass, Packet::encode, friendlyByteBuf -> {
-            try {
-                return packetClass.getDeclaredConstructor(FriendlyByteBuf.class).newInstance(friendlyByteBuf);
-            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
-                    InvocationTargetException ex) {
-                HaybaleLib.LOG.error("Error: Failed to instantiate packet - " + id);
-            }
-            return null;
-        }, (t, contextSupplier) -> {
-            if (contextSupplier.get().getDirection().getReceptionSide().isClient()) {
-                Services.SIDE.scheduleClient(t.getExecutor());
-            } else {
-                Services.SIDE.scheduleServer(t.getExecutor());
-            }
-            contextSupplier.get().setPacketHandled(true);
-        });
     }
 
     @Override
     public <T extends Packet> void sendToServer(T packet) {
         // Changing this, as 1.20.2+ will change
-        //        INSTANCE.sendToServer(packet);
-        INSTANCE.sendTo(packet, Minecraft.getInstance().getConnection().getConnection(), NetworkDirection.PLAY_TO_SERVER);
+        if (INSTANCE.isRemotePresent(Minecraft.getInstance().getConnection().getConnection())) {
+            INSTANCE.send(packet, PacketDistributor.SERVER.noArg());
+        }
     }
 
     @Override
     public <T extends Packet> void sendTo(T packet, ServerPlayer player) {
-        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), packet);
+        INSTANCE.send(packet, PacketDistributor.PLAYER.with(player));
     }
 
     @Override
