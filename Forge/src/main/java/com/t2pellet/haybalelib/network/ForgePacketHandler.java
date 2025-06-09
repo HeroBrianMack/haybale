@@ -43,7 +43,7 @@ public class ForgePacketHandler implements IPacketHandler {
 
     private <T extends Packet> void registerPacket(String modid, String name, Class<T> packetClass) {
         ResourceLocation id = new ResourceLocation(modid, name);
-        // changed in 1.20.1+!
+        // changed in 1.20.2+!
         INSTANCE.messageBuilder(packetClass, idMap.get(id)).encoder(Packet::encode).decoder(friendlyByteBuf -> {
                     try {
                         return packetClass.getDeclaredConstructor(FriendlyByteBuf.class).newInstance(friendlyByteBuf);
@@ -60,22 +60,6 @@ public class ForgePacketHandler implements IPacketHandler {
             }
             contextSupplier.get().setPacketHandled(true);
         }).add();
-        INSTANCE.registerMessage(idMap.get(id), packetClass, Packet::encode, friendlyByteBuf -> {
-            try {
-                return packetClass.getDeclaredConstructor(FriendlyByteBuf.class).newInstance(friendlyByteBuf);
-            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
-                    InvocationTargetException ex) {
-                HaybaleLib.LOG.error("Error: Failed to instantiate packet - " + id);
-            }
-            return null;
-        }, (t, contextSupplier) -> {
-            if (contextSupplier.get().getDirection().getReceptionSide().isClient()) {
-                Services.SIDE.scheduleClient(t.getExecutor());
-            } else {
-                Services.SIDE.scheduleServer(t.getExecutor());
-            }
-            contextSupplier.get().setPacketHandled(true);
-        });
     }
 
     @Override
