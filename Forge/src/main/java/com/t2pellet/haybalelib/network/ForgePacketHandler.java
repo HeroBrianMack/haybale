@@ -3,6 +3,7 @@ package com.t2pellet.haybalelib.network;
 import com.t2pellet.haybalelib.Services;
 import com.t2pellet.haybalelib.HaybaleLib;
 import com.t2pellet.haybalelib.network.api.Packet;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -10,10 +11,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
+//import net.minecraftforge.network.SimpleChannel;
 import net.minecraftforge.network.simple.SimpleChannel;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,12 +24,12 @@ public class ForgePacketHandler implements IPacketHandler {
 
     private final String PROTOCOL_VERSION = "4";
     private final Map<ResourceLocation, Integer> idMap = new HashMap<>();
-    private final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(HaybaleLib.MODID, "main"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals
-    );
+    private final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder.named(
+            new ResourceLocation(HaybaleLib.MODID, "main"))
+            .clientAcceptedVersions((tmp) -> true)
+            .serverAcceptedVersions((tmp) -> true)
+            .networkProtocolVersion(() -> PROTOCOL_VERSION)
+            .simpleChannel();
 
     public void registerServerPacket(String modid, String name, Class<? extends Packet> packetClass) {
         idMap.put(new ResourceLocation(modid, name), idMap.size());
@@ -41,6 +43,23 @@ public class ForgePacketHandler implements IPacketHandler {
 
     private <T extends Packet> void registerPacket(String modid, String name, Class<T> packetClass) {
         ResourceLocation id = new ResourceLocation(modid, name);
+        // changed in 1.20.1+!
+        INSTANCE.messageBuilder(packetClass, idMap.get(id)).encoder(Packet::encode).decoder(friendlyByteBuf -> {
+                    try {
+                        return packetClass.getDeclaredConstructor(FriendlyByteBuf.class).newInstance(friendlyByteBuf);
+                    } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                             InvocationTargetException ex) {
+                        HaybaleLib.LOG.error("Error: Failed to instantiate packet - " + id);
+                    }
+                    return null;
+                }).consumerNetworkThread((t, contextSupplier) -> {
+            if (contextSupplier.get().getDirection().getReceptionSide().isClient()) {
+                Services.SIDE.scheduleClient(t.getExecutor());
+            } else {
+                Services.SIDE.scheduleServer(t.getExecutor());
+            }
+            contextSupplier.get().setPacketHandled(true);
+        }).add();
         INSTANCE.registerMessage(idMap.get(id), packetClass, Packet::encode, friendlyByteBuf -> {
             try {
                 return packetClass.getDeclaredConstructor(FriendlyByteBuf.class).newInstance(friendlyByteBuf);
@@ -61,7 +80,9 @@ public class ForgePacketHandler implements IPacketHandler {
 
     @Override
     public <T extends Packet> void sendToServer(T packet) {
-        INSTANCE.sendToServer(packet);
+        // Changing this, as 1.20.2+ will change
+        //        INSTANCE.sendToServer(packet);
+        INSTANCE.sendTo(packet, Minecraft.getInstance().getConnection().getConnection(), NetworkDirection.PLAY_TO_SERVER);
     }
 
     @Override
