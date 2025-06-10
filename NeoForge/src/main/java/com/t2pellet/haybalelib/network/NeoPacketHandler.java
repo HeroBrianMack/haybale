@@ -10,24 +10,24 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ForgePacketHandler implements IPacketHandler {
+public class NeoPacketHandler implements IPacketHandler {
 
     private final String PROTOCOL_VERSION = "4";
     private final Map<ResourceLocation, Integer> idMap = new HashMap<>();
-    private final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(HaybaleLib.MODID, "main"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals
-    );
+    private final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder.named(
+                    new ResourceLocation(HaybaleLib.MODID, "main"))
+            .clientAcceptedVersions((tmp) -> true)
+            .serverAcceptedVersions((tmp1) -> true)
+            .networkProtocolVersion(() -> PROTOCOL_VERSION)
+            .simpleChannel();
 
     public void registerServerPacket(String modid, String name, Class<? extends Packet> packetClass) {
         idMap.put(new ResourceLocation(modid, name), idMap.size());
@@ -41,22 +41,23 @@ public class ForgePacketHandler implements IPacketHandler {
 
     private <T extends Packet> void registerPacket(String modid, String name, Class<T> packetClass) {
         ResourceLocation id = new ResourceLocation(modid, name);
-        INSTANCE.registerMessage(idMap.get(id), packetClass, Packet::encode, friendlyByteBuf -> {
+        // changed in 1.20.2+!
+        INSTANCE.messageBuilder(packetClass, idMap.get(id)).encoder(Packet::encode).decoder(friendlyByteBuf -> {
             try {
                 return packetClass.getDeclaredConstructor(FriendlyByteBuf.class).newInstance(friendlyByteBuf);
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
-                    InvocationTargetException ex) {
+                     InvocationTargetException ex) {
                 HaybaleLib.LOG.error("Error: Failed to instantiate packet - " + id);
             }
             return null;
-        }, (t, contextSupplier) -> {
-            if (contextSupplier.get().getDirection().getReceptionSide().isClient()) {
+        }).consumerNetworkThread((t, contextSupplier) -> {
+            if (contextSupplier.getDirection().getReceptionSide().isClient()) {
                 Services.SIDE.scheduleClient(t.getExecutor());
             } else {
                 Services.SIDE.scheduleServer(t.getExecutor());
             }
-            contextSupplier.get().setPacketHandled(true);
-        });
+            contextSupplier.setPacketHandled(true);
+        }).add();
     }
 
     @Override

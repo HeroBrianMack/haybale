@@ -1,6 +1,6 @@
 # Haybale
 
-Haybale is a mediocre library mod for multiloader.
+Haybale is a library mod for multiloader.
 
 It lets me have almost all of my code be common code. And should hopefully make updating to new versions easier.
 

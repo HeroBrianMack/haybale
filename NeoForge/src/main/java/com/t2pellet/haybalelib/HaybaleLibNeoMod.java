@@ -8,15 +8,14 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
-import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.ConfigScreenHandler;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-public abstract class HaybaleLibForgeMod {
+public abstract class HaybaleLibNeoMod {
 
     // Mod references
     private final String modid;
@@ -29,13 +28,13 @@ public abstract class HaybaleLibForgeMod {
     public final DeferredRegister<SoundEvent> SOUNDS;
     public final DeferredRegister<Item> ITEMS;
 
-    public HaybaleLibForgeMod() {
+    public HaybaleLibNeoMod() {
         initialSetup();
         HaybaleLibMod.IMod modAnnotation = getClass().getAnnotation(HaybaleLibMod.IMod.class);
         commonMod = getCommonMod();
         clientMod = getClientMod();
         modid = modAnnotation.value();
-        HaybaleLibForge.getInstance().register(modid, this);
+        HaybaleLibNeo.getInstance().register(modid, this);
         // Create deferred registers
         ENTITIES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, modid);
         ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, modid);
@@ -44,7 +43,9 @@ public abstract class HaybaleLibForgeMod {
         // Common init
         onCommonSetup();
         // Client init
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> this::onClientSetup);
+        if (FMLEnvironment.dist.isClient()) onClientSetup();
+        // Remove deprecated part
+//        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> this::onClientSetup);
         // Register into deferred registers
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ENTITIES.register(bus);

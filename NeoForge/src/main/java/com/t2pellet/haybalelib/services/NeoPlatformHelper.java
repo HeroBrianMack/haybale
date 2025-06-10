@@ -1,9 +1,9 @@
 package com.t2pellet.haybalelib.services;
 
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLPaths;
 
-public class ForgePlatformHelper implements IPlatformHelper {
+public class NeoPlatformHelper implements IPlatformHelper {
 
     @Override
     public String getGameDir() {

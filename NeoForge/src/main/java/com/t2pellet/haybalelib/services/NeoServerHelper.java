@@ -1,9 +1,9 @@
 package com.t2pellet.haybalelib.services;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
-public class ForgeServerHelper implements IServerHelper {
+public class NeoServerHelper implements IServerHelper {
     @Override
     public MinecraftServer getServer() {
         return ServerLifecycleHooks.getCurrentServer();

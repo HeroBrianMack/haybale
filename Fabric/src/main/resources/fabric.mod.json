@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "haybalelib",
+  "id": "${mod_id}",
   "version": "${version}",
-  "name": "Haybale Lib",
-  "description": "Library mod for Tenzin's mods!",
+  "name": "${mod_name}",
+  "description": "${description}",
   "authors": [
     "${mod_author}"
   ],
@@ -11,7 +11,7 @@
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/haybale-1-20-1",
     "sources": "https://github.com/HeroBrianMack/haybale"
   },
-  "license": "AGPLv3",
+  "license": "${license}",
   "icon": "assets/haybalelib/icon.png",
   "environment": "*",
   "entrypoints": {
@@ -29,8 +29,8 @@
   ],
   "depends": {
     "fabricloader": ">=0.15.11",
-    "fabric": ">=0.83.1",
-    "minecraft": "1.20.1",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}",
     "java": ">=17"
   },
   "suggests": {

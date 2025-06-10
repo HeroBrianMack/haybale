@@ -1,14 +1,14 @@
 package com.t2pellet.haybalelib.services;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.PriorityQueue;
 
-public class ForgeSidedExecutor implements ISidedExecutor {
+public class NeoSidedExecutor implements ISidedExecutor {
 
     static class PQEntry implements Comparable<PQEntry> {
 
@@ -21,7 +21,7 @@ public class ForgeSidedExecutor implements ISidedExecutor {
         }
 
         @Override
-        public int compareTo(@NotNull ForgeSidedExecutor.PQEntry o) {
+        public int compareTo(@NotNull NeoSidedExecutor.PQEntry o) {
             return tick.compareTo(o.tick);
         }
     }

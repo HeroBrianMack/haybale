@@ -10,18 +10,17 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.common.util.Lazy;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class ForgeClientRegistry implements IClientRegistry {
+public class NeoClientRegistry implements IClientRegistry {
 
     @Override
-    @SuppressWarnings("unchecked")
     public Supplier<ParticleType<SimpleParticleType>> register(String modid, ParticleFactoryEntryType particleFactoryEntry) {
         System.out.println("Called to register particle!");
         FMLJavaModLoadingContext.get().getModEventBus().addListener((Consumer<RegisterParticleProvidersEvent>) particleFactoryRegisterEvent -> {

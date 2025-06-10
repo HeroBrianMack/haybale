@@ -2,23 +2,23 @@ package com.t2pellet.haybalelib;
 
 import com.t2pellet.haybalelib.client.HaybaleLibModClient;
 import com.t2pellet.haybalelib.client.HaybaleLibClient;
-import com.t2pellet.haybalelib.services.ForgeSidedExecutor;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Mod;
+import com.t2pellet.haybalelib.services.NeoSidedExecutor;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.fml.common.Mod;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Mod(HaybaleLib.MODID)
 @HaybaleLibMod.IMod(HaybaleLib.MODID)
-public class HaybaleLibForge extends HaybaleLibForgeMod {
+public class HaybaleLibNeo extends HaybaleLibNeoMod {
 
-    private static HaybaleLibForge instance = null;
-    public static HaybaleLibForge getInstance() {
+    private static HaybaleLibNeo instance = null;
+    public static HaybaleLibNeo getInstance() {
         return instance;
     }
 
-    private Map<String, HaybaleLibForgeMod> modMap;
+    private Map<String, HaybaleLibNeoMod> modMap;
 
     @Override
     protected void initialSetup() {
@@ -38,14 +38,14 @@ public class HaybaleLibForge extends HaybaleLibForgeMod {
 
     @Override
     protected void registerEvents() {
-        MinecraftForge.EVENT_BUS.addListener(((ForgeSidedExecutor) Services.SIDE)::onServerTick);
+        NeoForge.EVENT_BUS.addListener(((NeoSidedExecutor) Services.SIDE)::onServerTick);
     }
 
-    public void register(String id, HaybaleLibForgeMod mod) {
+    public void register(String id, HaybaleLibNeoMod mod) {
         modMap.put(id, mod);
     }
 
-    public HaybaleLibForgeMod get(String modid) {
+    public HaybaleLibNeoMod get(String modid) {
         return modMap.get(modid);
     }
 }
