@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "${mod_id}",
+  "id": "haybalelib",
   "version": "${version}",
   "name": "${mod_name}",
   "description": "${description}",
@@ -28,7 +28,7 @@
     "haybalelib.fabric.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.15.11",
+    "fabricloader": ">=0.15.0",
     "fabric-api": "*",
     "minecraft": "${minecraft_version}",
     "java": ">=17"
