@@ -16,19 +16,19 @@ description = '''${description}''' #mandatory (Supports multiline text)
 [[dependencies.haybale]] #optional
     modId = "forge" #mandatory
     mandatory = true #mandatory
-    versionRange = "[47.3,)" #mandatory
+    versionRange = "${forge_version_range}" #mandatory
     ordering = "NONE"
     side = "BOTH"
 [[dependencies.haybale]]
     modId = "minecraft"
     mandatory = true
-    versionRange = "[1.20.1]"
+    versionRange = "${minecraft_version_range}"
     ordering = "NONE"
     side = "BOTH"
 [[dependencies.haybale]]
     modId = "cloth_config"
     mandatory = false
-    versionRange = "[11,)"
+    versionRange = "${cloth_range}"
     ordering="NONE"
     side="BOTH"
     [dependencies.haybale.mc-publish]

@@ -10,10 +10,10 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -23,7 +23,7 @@ public class NeoClientRegistry implements IClientRegistry {
     @Override
     public Supplier<ParticleType<SimpleParticleType>> register(String modid, ParticleFactoryEntryType particleFactoryEntry) {
         System.out.println("Called to register particle!");
-        FMLJavaModLoadingContext.get().getModEventBus().addListener((Consumer<RegisterParticleProvidersEvent>) particleFactoryRegisterEvent -> {
+        ModLoadingContext.get().getActiveContainer().getEventBus().addListener((Consumer<RegisterParticleProvidersEvent>) particleFactoryRegisterEvent -> {
             System.out.println("REGISTER SPRITE SET");
             particleFactoryRegisterEvent.registerSpriteSet(particleFactoryEntry.get(), spriteSet -> particleFactoryEntry.getProviderFunction().apply(spriteSet));
         });
@@ -33,7 +33,7 @@ public class NeoClientRegistry implements IClientRegistry {
     @Override
     public Supplier<ModelLayerLocation> register(String modid, EntityModelEntryType modelEntry) {
         Lazy<ModelLayerLocation> locSupplier = () -> new ModelLayerLocation(new ResourceLocation(modid, modelEntry.getName()), "main");
-        FMLJavaModLoadingContext.get().getModEventBus().addListener((Consumer<EntityRenderersEvent.RegisterLayerDefinitions>) event -> {
+        ModLoadingContext.get().getActiveContainer().getEventBus().addListener((Consumer<EntityRenderersEvent.RegisterLayerDefinitions>) event -> {
             event.registerLayerDefinition(locSupplier.get(), modelEntry::getLayerDefinition);
         });
         return locSupplier;
@@ -41,7 +41,7 @@ public class NeoClientRegistry implements IClientRegistry {
 
     @Override
     public <T extends Entity> Supplier<EntityRendererProvider<T>> register(String modid, EntityRendererEntryType<T> rendererEntry) {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener((Consumer<EntityRenderersEvent.RegisterRenderers>) event -> {
+        ModLoadingContext.get().getActiveContainer().getEventBus().addListener((Consumer<EntityRenderersEvent.RegisterRenderers>) event -> {
             event.registerEntityRenderer(rendererEntry.getEntityType(), rendererEntry.getRendererProvider());
         });
         return rendererEntry::getRendererProvider;

@@ -4,15 +4,14 @@ import com.t2pellet.haybalelib.Services;
 import com.t2pellet.haybalelib.HaybaleLib;
 import com.t2pellet.haybalelib.network.api.Packet;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -20,54 +19,35 @@ import java.util.Map;
 
 public class NeoPacketHandler implements IPacketHandler {
 
-    private final String PROTOCOL_VERSION = "4";
     private final Map<ResourceLocation, Integer> idMap = new HashMap<>();
-    private final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder.named(
-                    new ResourceLocation(HaybaleLib.MODID, "main"))
-            .clientAcceptedVersions((tmp) -> true)
-            .serverAcceptedVersions((tmp1) -> true)
-            .networkProtocolVersion(() -> PROTOCOL_VERSION)
-            .simpleChannel();
-
+    static final Map<Class<? extends Packet>, String[]> packets = new HashMap<>();
     public void registerServerPacket(String modid, String name, Class<? extends Packet> packetClass) {
         idMap.put(new ResourceLocation(modid, name), idMap.size());
-        registerPacket(modid, name, packetClass);
+        registerPacket(modid, name, "Server", packetClass);
     }
 
     public void registerClientPacket(String modid, String name, Class<? extends Packet> packetClass) {
         idMap.put(new ResourceLocation(modid, name), idMap.size());
-        registerPacket(modid, name, packetClass);
+        registerPacket(modid, name, "Client", packetClass);
     }
 
-    private <T extends Packet> void registerPacket(String modid, String name, Class<T> packetClass) {
-        ResourceLocation id = new ResourceLocation(modid, name);
-        // changed in 1.20.2+!
-        INSTANCE.messageBuilder(packetClass, idMap.get(id)).encoder(Packet::encode).decoder(friendlyByteBuf -> {
-            try {
-                return packetClass.getDeclaredConstructor(FriendlyByteBuf.class).newInstance(friendlyByteBuf);
-            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
-                     InvocationTargetException ex) {
-                HaybaleLib.LOG.error("Error: Failed to instantiate packet - " + id);
-            }
-            return null;
-        }).consumerNetworkThread((t, contextSupplier) -> {
-            if (contextSupplier.getDirection().getReceptionSide().isClient()) {
-                Services.SIDE.scheduleClient(t.getExecutor());
-            } else {
-                Services.SIDE.scheduleServer(t.getExecutor());
-            }
-            contextSupplier.setPacketHandled(true);
-        }).add();
+    private <T extends Packet> void registerPacket(String modid, String name, String side, Class<? extends Packet> packetClass) {
+//        ResourceLocation id = new ResourceLocation(modid, name);
+        // Side is unused, but potentially useful in the future...
+        String[] str = packets.put(packetClass, new String[] {modid, name, side});
+        if (str != null) {
+            HaybaleLib.LOG.error("Error: Overwritten instantiation of packet - " + str[1]);
+        }
     }
 
     @Override
     public <T extends Packet> void sendToServer(T packet) {
-        INSTANCE.sendToServer(packet);
+        PacketDistributor.SERVER.noArg().send(new ClientboundCustomPayloadPacket(packet));
     }
 
     @Override
     public <T extends Packet> void sendTo(T packet, ServerPlayer player) {
-        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), packet);
+        PacketDistributor.PLAYER.noArg().send(new ClientboundCustomPayloadPacket(packet));
     }
 
     @Override

@@ -12,4 +12,6 @@ public interface IPlatformHelper {
      */
     boolean isModLoaded(String modId);
 
+    String getLoader();
+
 }

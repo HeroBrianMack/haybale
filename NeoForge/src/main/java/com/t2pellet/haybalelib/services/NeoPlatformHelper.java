@@ -14,4 +14,9 @@ public class NeoPlatformHelper implements IPlatformHelper {
     public boolean isModLoaded(String modId) {
         return ModList.get().isLoaded(modId);
     }
+
+    @Override
+    public String getLoader() {
+        return "Neo";
+    }
 }

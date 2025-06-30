@@ -21,24 +21,24 @@ public class ForgePacketHandler implements IPacketHandler {
     private final int PROTOCOL_VERSION = 4;
     private final Map<ResourceLocation, Integer> idMap = new HashMap<>();
     private final SimpleChannel INSTANCE = ChannelBuilder.named(
-            new ResourceLocation(HaybaleLib.MODID, "main"))
+            ResourceLocation.tryBuild(HaybaleLib.MODID, "main"))
             .clientAcceptedVersions((tmp, tmp2) -> true)
             .serverAcceptedVersions((tmp1, tmp2) -> true)
             .networkProtocolVersion(PROTOCOL_VERSION)
             .simpleChannel();
 
     public void registerServerPacket(String modid, String name, Class<? extends Packet> packetClass) {
-        idMap.put(new ResourceLocation(modid, name), idMap.size());
+        idMap.put(ResourceLocation.tryBuild(modid, name), idMap.size());
         registerPacket(modid, name, packetClass);
     }
 
     public void registerClientPacket(String modid, String name, Class<? extends Packet> packetClass) {
-        idMap.put(new ResourceLocation(modid, name), idMap.size());
+        idMap.put(ResourceLocation.tryBuild(modid, name), idMap.size());
         registerPacket(modid, name, packetClass);
     }
 
     private <T extends Packet> void registerPacket(String modid, String name, Class<T> packetClass) {
-        ResourceLocation id = new ResourceLocation(modid, name);
+        ResourceLocation id = ResourceLocation.tryBuild(modid, name);
         // changed in 1.20.2+!
         INSTANCE.messageBuilder(packetClass, idMap.get(id)).encoder(Packet::encode).decoder(friendlyByteBuf -> {
                     try {

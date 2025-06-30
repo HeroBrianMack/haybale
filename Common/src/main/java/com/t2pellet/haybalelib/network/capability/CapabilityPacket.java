@@ -1,11 +1,13 @@
 package com.t2pellet.haybalelib.network.capability;
 
+import com.t2pellet.haybalelib.HaybaleLib;
 import com.t2pellet.haybalelib.entity.capability.api.Capability;
 import com.t2pellet.haybalelib.entity.capability.api.ICapabilityHaver;
 import com.t2pellet.haybalelib.network.api.Packet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
 public class CapabilityPacket<E extends Entity & ICapabilityHaver> extends Packet {
@@ -42,5 +44,10 @@ public class CapabilityPacket<E extends Entity & ICapabilityHaver> extends Packe
         tag.putString("class", clazz.getName());
         tag.put("data", capability.writeTag());
         super.encode(byteBuf);
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return new ResourceLocation(HaybaleLib.MODID, "capability");
     }
 }

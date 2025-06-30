@@ -19,19 +19,19 @@ config = "${mod_id}.neoforge.mixins.json"
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.${mod_id}]]
     modId = "neoforge" #mandatory
-    mandatory = true #mandatory
+    type = 'required'
     versionRange="${neo_version_range}" #mandatory
     ordering = "NONE"
     side = "BOTH"
 [[dependencies.${mod_id}]]
     modId = "minecraft"
-    mandatory = true
+    type = 'required'
     versionRange = "${minecraft_version_range}"
     ordering = "NONE"
     side = "BOTH"
 [[dependencies.${mod_id}]]
     modId = "cloth_config"
-    mandatory = false
+    type = 'optional'
     versionRange = "${cloth_range}"
     ordering="BEFORE"
     side="BOTH"

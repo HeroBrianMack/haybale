@@ -2,7 +2,9 @@ package com.t2pellet.haybalelib;
 
 import com.t2pellet.haybalelib.client.HaybaleLibModClient;
 import com.t2pellet.haybalelib.client.HaybaleLibClient;
+import com.t2pellet.haybalelib.network.NeoChannel;
 import com.t2pellet.haybalelib.services.NeoSidedExecutor;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.fml.common.Mod;
 
@@ -14,6 +16,14 @@ import java.util.Map;
 public class HaybaleLibNeo extends HaybaleLibNeoMod {
 
     private static HaybaleLibNeo instance = null;
+
+    public HaybaleLibNeo(IEventBus bus) {
+        super(bus);
+
+        // How NeoForge registers packets...
+        bus.addListener(NeoChannel::onRegisterPayloadHandler);
+    }
+
     public static HaybaleLibNeo getInstance() {
         return instance;
     }

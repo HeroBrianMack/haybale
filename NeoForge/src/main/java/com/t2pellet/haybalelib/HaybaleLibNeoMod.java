@@ -12,7 +12,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.ConfigScreenHandler;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public abstract class HaybaleLibNeoMod {
@@ -28,7 +27,7 @@ public abstract class HaybaleLibNeoMod {
     public final DeferredRegister<SoundEvent> SOUNDS;
     public final DeferredRegister<Item> ITEMS;
 
-    public HaybaleLibNeoMod() {
+    public HaybaleLibNeoMod(IEventBus bus) {
         initialSetup();
         HaybaleLibMod.IMod modAnnotation = getClass().getAnnotation(HaybaleLibMod.IMod.class);
         commonMod = getCommonMod();
@@ -47,7 +46,7 @@ public abstract class HaybaleLibNeoMod {
         // Remove deprecated part
 //        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> this::onClientSetup);
         // Register into deferred registers
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+//        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ENTITIES.register(bus);
         ITEMS.register(bus);
         PARTICLES.register(bus);

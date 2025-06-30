@@ -2,8 +2,9 @@ package com.t2pellet.haybalelib.network.api;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public abstract class Packet {
+public abstract class Packet implements CustomPacketPayload {
 
     protected CompoundTag tag;
 
@@ -16,6 +17,10 @@ public abstract class Packet {
     }
 
     public void encode(FriendlyByteBuf byteBuf) {
+        byteBuf.writeNbt(tag);
+    }
+
+    public void write(FriendlyByteBuf byteBuf) {
         byteBuf.writeNbt(tag);
     }
 

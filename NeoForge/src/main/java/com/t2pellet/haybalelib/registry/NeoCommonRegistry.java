@@ -3,6 +3,7 @@ package com.t2pellet.haybalelib.registry;
 import com.t2pellet.haybalelib.HaybaleLibNeo;
 import com.t2pellet.haybalelib.HaybaleLibNeoMod;
 import com.t2pellet.haybalelib.Services;
+import com.t2pellet.haybalelib.network.NeoChannel;
 import com.t2pellet.haybalelib.network.NeoPacketHandler;
 import com.t2pellet.haybalelib.network.api.Packet;
 import com.t2pellet.haybalelib.registry.api.EntityEntryType;
@@ -15,8 +16,9 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -35,7 +37,7 @@ public class NeoCommonRegistry implements ICommonRegistry {
         Supplier<EntityType<T>> result = forgeMod.ENTITIES.register(entityEntryType.getName(), () -> EntityType.Builder.of(entityEntryType.getFactory(), entityEntryType.getMobCategory())
                 .clientTrackingRange(48).updateInterval(3).sized(entityEntryType.getWidth(), entityEntryType.getHeight())
                 .build(entityEntryType.getName()));
-        FMLJavaModLoadingContext.get().getModEventBus().addListener((Consumer<EntityAttributeCreationEvent>) event -> event.put(result.get(), entityEntryType.buildAttributes()));
+        ModLoadingContext.get().getActiveContainer().getEventBus().addListener((Consumer<EntityAttributeCreationEvent>) event -> event.put(result.get(), entityEntryType.buildAttributes()));
         return result;
     }
 
