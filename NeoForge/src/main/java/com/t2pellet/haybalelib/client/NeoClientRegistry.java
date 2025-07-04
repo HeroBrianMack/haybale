@@ -32,7 +32,7 @@ public class NeoClientRegistry implements IClientRegistry {
 
     @Override
     public Supplier<ModelLayerLocation> register(String modid, EntityModelEntryType modelEntry) {
-        Lazy<ModelLayerLocation> locSupplier = () -> new ModelLayerLocation(new ResourceLocation(modid, modelEntry.getName()), "main");
+        Lazy<ModelLayerLocation> locSupplier = Lazy.of(() -> (new ModelLayerLocation(new ResourceLocation(modid, modelEntry.getName()), "main")));
         ModLoadingContext.get().getActiveContainer().getEventBus().addListener((Consumer<EntityRenderersEvent.RegisterLayerDefinitions>) event -> {
             event.registerLayerDefinition(locSupplier.get(), modelEntry::getLayerDefinition);
         });

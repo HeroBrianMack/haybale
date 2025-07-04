@@ -22,4 +22,4 @@ pluginManagement.repositories {
 
 
 rootProject.name = 'haybale'
-include("Common", "Fabric", "Forge", "NeoForge")
+include("Common", "Fabric", "Forge")

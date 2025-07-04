@@ -16,7 +16,7 @@ subprojects {
     apply plugin: 'java'
 //    apply plugin: 'idea'
 
-    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+    java.toolchain.languageVersion = JavaLanguageVersion.of(21)
     java.withSourcesJar()
 
     jar {
@@ -69,7 +69,7 @@ subprojects {
     tasks.withType(JavaCompile).configureEach {
 
         it.options.encoding = 'UTF-8'
-        it.options.getRelease().set(17)
+        it.options.getRelease().set(21)
     }
 
     processResources {
@@ -99,7 +99,7 @@ subprojects {
                 "cloth_range": cloth_range
         ]
 
-        filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', '*.mixins.json']) {
+        filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', '*.mixins.json', 'META-INF/neoforge.mods.toml']) {
             expand expandProps
         }
         inputs.properties(expandProps)
@@ -107,7 +107,9 @@ subprojects {
 //            expand project.properties
 //        }
     }
-
+    java {
+        modularity.inferModulePath = false
+    }
     // Disables Gradle's custom module metadata from being published to maven. The
     // metadata includes mapped dependencies which are not reasonably consumable by
     // other mod developers.

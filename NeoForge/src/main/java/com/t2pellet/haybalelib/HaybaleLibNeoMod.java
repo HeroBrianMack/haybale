@@ -9,9 +9,9 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.ConfigScreenHandler;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public abstract class HaybaleLibNeoMod {
@@ -86,10 +86,10 @@ public abstract class HaybaleLibNeoMod {
         if (Services.PLATFORM.isModLoaded("cloth_config")) {
             System.out.println("CLOTH LOADED");
             ConfigMenu configMenu = new ConfigMenu(modid);
-            ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
+            ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class,
                     () -> {
                         System.out.println("REGISTERED CONFIG FACTORY");
-                        return new ConfigScreenHandler.ConfigScreenFactory((minecraft, screen) -> configMenu.buildConfigScreen());
+                        return ((minecraft, screen) -> configMenu.buildConfigScreen());
                     });
         }
     }

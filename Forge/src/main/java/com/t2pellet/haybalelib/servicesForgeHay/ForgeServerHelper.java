@@ -1,5 +1,6 @@
-package com.t2pellet.haybalelib.services;
+package com.t2pellet.haybalelib.servicesForgeHay;
 
+import com.t2pellet.haybalelib.services.IServerHelper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.server.ServerLifecycleHooks;
 

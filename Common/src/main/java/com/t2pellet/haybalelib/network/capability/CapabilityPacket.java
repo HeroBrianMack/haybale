@@ -7,13 +7,38 @@ import com.t2pellet.haybalelib.network.api.Packet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
+import static com.t2pellet.haybalelib.HaybaleLib.LOG;
+
 public class CapabilityPacket<E extends Entity & ICapabilityHaver> extends Packet {
 
+    public E getCapabilityHaver() {
+        return capabilityHaver;
+    }
+
     private E capabilityHaver;
-    private final Class<? extends Capability> clazz;
+
+    public Class<? extends Capability> getClazz() {
+        return clazz;
+    }
+
+    private Class<? extends Capability> clazz;
+    public static final CustomPacketPayload.Type<CapabilityPacket> TYPE = new CustomPacketPayload.Type<>(new ResourceLocation(HaybaleLib.MODID, "capability"));
+    public static final StreamCodec<FriendlyByteBuf, CapabilityPacket> STREAM_CODEC = new StreamCodec<FriendlyByteBuf, CapabilityPacket>() {
+        @Override
+        public CapabilityPacket decode(FriendlyByteBuf friendlyByteBuf) {
+            return new CapabilityPacket(friendlyByteBuf);
+        }
+
+        @Override
+        public void encode(FriendlyByteBuf o, CapabilityPacket capabilityPacket) {
+            capabilityPacket.encode(o);
+        }
+    };
 
     public CapabilityPacket(E capabilityHaver, Class<? extends Capability> clazz) {
         super();
@@ -21,10 +46,14 @@ public class CapabilityPacket<E extends Entity & ICapabilityHaver> extends Packe
         this.clazz = (Class<? extends Capability>) clazz.getInterfaces()[0];
     }
 
-    public CapabilityPacket(FriendlyByteBuf byteBuf) throws ClassNotFoundException {
+    public CapabilityPacket(FriendlyByteBuf byteBuf) {
         super(byteBuf);
         String classStr = tag.getString("class");
-        this.clazz = (Class<? extends Capability>) Class.forName(classStr);
+        try {
+            this.clazz = (Class<? extends Capability>) Class.forName(classStr);
+        } catch (ClassNotFoundException e) {
+            LOG.error("Capability Packet " + classStr + " Class not found!");
+        }
     }
 
     @Override
@@ -47,7 +76,12 @@ public class CapabilityPacket<E extends Entity & ICapabilityHaver> extends Packe
     }
 
     @Override
-    public ResourceLocation id() {
-        return new ResourceLocation(HaybaleLib.MODID, "capability");
+    public Type<? extends CustomPacketPayload> type() {
+        return new Type(new ResourceLocation(HaybaleLib.MODID, "capability"));
     }
+
+    public static Type<? extends CustomPacketPayload> staticType() {
+        return new Type(new ResourceLocation(HaybaleLib.MODID, "capability"));
+    }
+
 }

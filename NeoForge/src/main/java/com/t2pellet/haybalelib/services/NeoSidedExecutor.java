@@ -1,8 +1,9 @@
 package com.t2pellet.haybalelib.services;
 
+import com.t2pellet.haybalelib.HaybaleLib;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +46,7 @@ public class NeoSidedExecutor implements ISidedExecutor {
         pq.add(new PQEntry(runnable, tick + ticks));
     }
 
-    public void onServerTick(TickEvent.ServerTickEvent event) {
+    public void onServerTick(ServerTickEvent.Pre event) {
         ++tick;
         PQEntry top = pq.peek();
         if (top != null && top.tick < tick) {

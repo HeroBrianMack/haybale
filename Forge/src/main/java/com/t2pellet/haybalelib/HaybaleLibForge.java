@@ -2,7 +2,7 @@ package com.t2pellet.haybalelib;
 
 import com.t2pellet.haybalelib.client.HaybaleLibModClient;
 import com.t2pellet.haybalelib.client.HaybaleLibClient;
-import com.t2pellet.haybalelib.services.ForgeSidedExecutor;
+import com.t2pellet.haybalelib.servicesForgeHay.ForgeSidedExecutor;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 

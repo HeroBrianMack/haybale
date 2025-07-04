@@ -1,5 +1,6 @@
-package com.t2pellet.haybalelib.services;
+package com.t2pellet.haybalelib.servicesForgeHay;
 
+import com.t2pellet.haybalelib.services.IPlatformHelper;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
 

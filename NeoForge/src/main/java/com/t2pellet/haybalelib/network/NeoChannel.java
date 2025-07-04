@@ -10,28 +10,43 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class NeoChannel {
 
-    public static void onRegisterPayloadHandler(RegisterPayloadHandlerEvent event) {
-        final IPayloadRegistrar registrar = event.registrar(HaybaleLib.MODID)
+    public static void onRegisterPayloadHandler(RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar(HaybaleLib.MODID)
                 .versioned("1.0")
                 .optional();
-        for (Class<? extends Packet> packet : NeoPacketHandler.packets.keySet()) {
-            String[] info = NeoPacketHandler.packets.get(packet);
-            registrar.play(new ResourceLocation(info[0], info[1]), friendlyByteBuf -> {try {
-                return packet.getConstructor(FriendlyByteBuf.class).newInstance(friendlyByteBuf);
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException("Failed to instantiate packet: " + packet, e);
-            }}, handler -> handler.client((t, contextSupplier) -> {
-                if (contextSupplier.flow().getReceptionSide().isClient()) {
-                    Services.SIDE.scheduleClient(t.getExecutor());
-                } else {
-                    Services.SIDE.scheduleServer(t.getExecutor());
+        registrar.playBidirectional(CapabilityPacket.TYPE, CapabilityPacket.STREAM_CODEC, new DirectionalPayloadHandler<>(
+                (data, context) -> {
+                    if (context.flow().getReceptionSide().isClient()) {
+                        Services.SIDE.scheduleClient(data.getExecutor());
+                    }
+                }, (data, context) -> {
+                    if (context.flow().getReceptionSide().isServer()) {
+                        Services.SIDE.scheduleServer(data.getExecutor());
+                    }
                 }
-            }));
+        ));
+
+        for (Class<? extends Packet> packet : NeoPacketHandler.packets.keySet()) {
+
+            String[] info = NeoPacketHandler.packets.get(packet);
+
+//            registrar.playBidirectional(new ResourceLocation(info[0], info[1]), friendlyByteBuf -> {try {
+//                return packet.getConstructor(FriendlyByteBuf.class).newInstance(friendlyByteBuf);
+//            } catch (ReflectiveOperationException e) {
+//                throw new RuntimeException("Failed to instantiate packet: " + packet, e);
+//            }}, handler -> handler.client((t, contextSupplier) -> {
+//                if (contextSupplier.flow().getReceptionSide().isClient()) {
+//                    Services.SIDE.scheduleClient(t.getExecutor());
+//                } else {
+//                    Services.SIDE.scheduleServer(t.getExecutor());
+//                }
+//            }));
         }
     }
 }

@@ -5,6 +5,7 @@ import com.t2pellet.haybalelib.HaybaleLib;
 import com.t2pellet.haybalelib.network.api.Packet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,7 +50,7 @@ public class ForgePacketHandler implements IPacketHandler {
                     }
                     return null;
                 }).consumerNetworkThread((t, contextSupplier) -> {
-            if (contextSupplier.getDirection().getReceptionSide().isClient()) {
+            if (contextSupplier.isClientSide()) {
                 Services.SIDE.scheduleClient(t.getExecutor());
             } else {
                 Services.SIDE.scheduleServer(t.getExecutor());

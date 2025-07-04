@@ -34,6 +34,7 @@ public class NeoPacketHandler implements IPacketHandler {
     private <T extends Packet> void registerPacket(String modid, String name, String side, Class<? extends Packet> packetClass) {
 //        ResourceLocation id = new ResourceLocation(modid, name);
         // Side is unused, but potentially useful in the future...
+        // 1.20.5+ This serves zero purpose...
         String[] str = packets.put(packetClass, new String[] {modid, name, side});
         if (str != null) {
             HaybaleLib.LOG.error("Error: Overwritten instantiation of packet - " + str[1]);
@@ -42,12 +43,13 @@ public class NeoPacketHandler implements IPacketHandler {
 
     @Override
     public <T extends Packet> void sendToServer(T packet) {
-        PacketDistributor.SERVER.noArg().send(new ClientboundCustomPayloadPacket(packet));
+        PacketDistributor.sendToServer(packet);
+
     }
 
     @Override
     public <T extends Packet> void sendTo(T packet, ServerPlayer player) {
-        PacketDistributor.PLAYER.noArg().send(new ClientboundCustomPayloadPacket(packet));
+        PacketDistributor.sendToPlayer(player, packet);
     }
 
     @Override
